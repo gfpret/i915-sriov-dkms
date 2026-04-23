@@ -49,6 +49,9 @@
 #include <drm/drm_managed.h>
 #include <drm/drm_print.h>
 
+#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 14, 0) && defined(I915)
+#include "i915_drv.h"
+#endif
 #include "i915_vma.h"
 #include "intel_bo.h"
 #include "intel_display_core.h"
@@ -59,8 +62,6 @@
 #include "intel_fbdev.h"
 #include "intel_fbdev_fb.h"
 #include "intel_frontbuffer.h"
-
-#include "i915_drv.h"
 
 struct intel_fbdev {
 #if LINUX_VERSION_CODE < KERNEL_VERSION(6, 15, 0)

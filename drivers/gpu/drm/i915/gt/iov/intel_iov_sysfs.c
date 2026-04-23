@@ -641,10 +641,6 @@ static int pf_setup_provisioning(struct intel_iov *iov)
 		goto failed;
 	}
 
-	err = i915_inject_probe_error(iov_to_i915(iov), -ENOMEM);
-	if (unlikely(err))
-		goto failed;
-
 	kobjs = kcalloc(count, sizeof(*kobjs), GFP_KERNEL);
 	if (unlikely(!kobjs)) {
 		err = -ENOMEM;
@@ -653,12 +649,6 @@ static int pf_setup_provisioning(struct intel_iov *iov)
 
 	for (n = 0; n < count; n++) {
 		struct kobject *parent;
-
-		err = i915_inject_probe_error(iov_to_i915(iov), -ENOMEM);
-		if (unlikely(err)) {
-			kobj = NULL;
-			goto failed_kobj_n;
-		}
 
 		kobj = iov_kobj_alloc(iov);
 		if (unlikely(!kobj)) {
@@ -670,10 +660,6 @@ static int pf_setup_provisioning(struct intel_iov *iov)
 
 		err = kobject_init_and_add(kobj, &iov_ktype, parent, IOV_KOBJ_GTn_NAME,
 					   iov_to_gt(iov)->info.id);
-		if (unlikely(err))
-			goto failed_kobj_n;
-
-		err = i915_inject_probe_error(iov_to_i915(iov), -EEXIST);
 		if (unlikely(err))
 			goto failed_kobj_n;
 
