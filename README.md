@@ -13,13 +13,19 @@ You need to install this dkms module in **both host and guest!**
 
 ## Required kernel
 
-Required kernel: **6.12.x ~ 6.19.x**
+**Required kernel**: 6.17.x ~ 7.0.x
 
-For older kernel (v6.8 ~ v6.12), please use the [2025.07.22](https://github.com/strongtz/i915-sriov-dkms/releases/tag/2025.07.22) release.
+**Latest release**: [2026.05.03](https://github.com/strongtz/i915-sriov-dkms/releases/tag/2026.05.03)
+
+For older kernel (v6.12 ~ v6.19), please use the [2026.03.05.1](https://github.com/strongtz/i915-sriov-dkms/releases/tag/2026.03.05.1) release.
+
+For v6.8 ~ v6.12, please use the [2025.07.22](https://github.com/strongtz/i915-sriov-dkms/releases/tag/2025.07.22) release.
 
 For v6.1 ~ v6.7, please use [intel-lts-v6.1](https://github.com/strongtz/i915-sriov-dkms/tree/intel-lts-v6.1) branch instead.
 
 It is recommended that to upgrade to a supported kernel, the older branches will no longer be maintained.
+
+**Note**: The Host and Guest VM are not strictly required to use the same module version.
 
 **Note on Secure Boot:** Loading out-of-tree kernel modules requires Secure Boot to be disabled. If you require Secure Boot, ensure you are using a signed kernel and follow the instructions in the [UEFI Secure Boot Enabled Configuration](docs/secure-boot.md) guide to sign the module.
 
