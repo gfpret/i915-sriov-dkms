@@ -143,6 +143,13 @@ struct i915_gem_mm {
 	 */
 	atomic_t free_count;
 
+#if LINUX_VERSION_CODE < KERNEL_VERSION(7, 0, 0)
+	/**
+	 * tmpfs instance used for shmem backed objects
+	 */
+	struct vfsmount *gemfs;
+#endif
+
 	struct intel_memory_region *regions[INTEL_REGION_UNKNOWN];
 
 	struct notifier_block oom_notifier;

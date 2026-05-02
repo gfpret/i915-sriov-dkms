@@ -2,7 +2,7 @@
 /*
  * Copyright © 2017 Intel Corporation
  */
-
+#if LINUX_VERSION_CODE < KERNEL_VERSION(7, 0, 0)
 #include <linux/fs.h>
 #include <linux/mount.h>
 #include <linux/fs_context.h>
@@ -91,3 +91,4 @@ void i915_gemfs_fini(struct drm_i915_private *i915)
 {
 	kern_unmount(i915->mm.gemfs);
 }
+#endif

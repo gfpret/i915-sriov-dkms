@@ -141,4 +141,12 @@ int drm_dp_dsc_branch_max_line_width(const u8 dsc_branch_dpcd[DP_DSC_BRANCH_CAP_
 #define DP_DPCD_QUIRK_DSC_THROUGHPUT_BPP_LIMIT ((enum drm_dp_quirk)(DP_DPCD_QUIRK_HBLANK_EXPANSION_REQUIRES_DSC + 1))
 #endif
 
+#if LINUX_VERSION_CODE < KERNEL_VERSION(7, 0, 0)
+#define drm_dp_dsc_slice_count_to_mask LINUX_BACKPORT(drm_dp_dsc_slice_count_to_mask)
+u32 drm_dp_dsc_slice_count_to_mask(int slice_count);
+#define drm_dp_dsc_sink_slice_count_mask LINUX_BACKPORT(drm_dp_dsc_sink_slice_count_mask)
+u32 drm_dp_dsc_sink_slice_count_mask(const u8 dsc_dpcd[DP_DSC_RECEIVER_CAP_SIZE],
+				     bool is_edp);
+#endif
+
 #endif /* __BACKPORT_DRM_DP_HELPER_H__ */

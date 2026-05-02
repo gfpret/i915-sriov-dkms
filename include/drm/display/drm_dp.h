@@ -38,4 +38,7 @@
 #define DP_DSC_BRANCH_CAP_SIZE 3
 #endif
 
+#if LINUX_VERSION_CODE < KERNEL_VERSION(7, 0, 0)
+# define DP_PANEL_REPLAY_FULL_LINE_GRANULARITY		0xffff
+#endif
 #endif /* __BACKPORT_DRM_DP_H__ */

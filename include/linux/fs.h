@@ -14,5 +14,4 @@ static inline int vfs_mmap(struct file *file, struct vm_area_struct *vma)
 	return file->f_op->mmap(file, vma);
 }
 #endif
-
 #endif /* __BACKPORT_LINUX_FS_H__ */

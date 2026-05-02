@@ -21,4 +21,7 @@ drm_gpuvm_madvise_ops_create(struct drm_gpuvm *gpuvm,
 			     const struct drm_gpuvm_map_req *req);
 #endif
 
+#if LINUX_VERSION_CODE < KERNEL_VERSION(7, 0, 0)
+#define drm_gpuvm_bo_obtain_locked drm_gpuvm_bo_obtain
+#endif
 #endif

@@ -16,6 +16,9 @@
 #include "i915_drv.h"
 #include "i915_gem_object.h"
 #include "i915_gem_tiling.h"
+#if LINUX_VERSION_CODE < KERNEL_VERSION(7, 0, 0)
+#include "i915_gemfs.h"
+#endif
 #include "i915_scatterlist.h"
 #include "i915_trace.h"
 #include "i915_utils.h"
@@ -555,8 +558,12 @@ static int __create_shmem(struct drm_i915_private *i915,
 			  resource_size_t size,
 			  unsigned int flags)
 {
+#if LINUX_VERSION_CODE < KERNEL_VERSION(7, 0, 0)
+	unsigned long shmem_flags = VM_NORESERVE;
+#else
 	const vma_flags_t shmem_flags = mk_vma_flags(VMA_NORESERVE_BIT);
 	struct vfsmount *huge_mnt;
+#endif
 	struct file *filp;
 
 	drm_gem_private_object_init(&i915->drm, obj, size);
@@ -574,13 +581,20 @@ static int __create_shmem(struct drm_i915_private *i915,
 	 */
 	if (BITS_PER_LONG == 64 && size > MAX_LFS_FILESIZE)
 		return -E2BIG;
-
+#if LINUX_VERSION_CODE < KERNEL_VERSION(7, 0, 0)
+	if (!(flags & I915_BO_ALLOC_NOTHP) && i915->mm.gemfs)
+		filp = shmem_file_setup_with_mnt(i915->mm.gemfs, "i915", size,
+						 shmem_flags);
+	else
+		filp = shmem_file_setup("i915", size, shmem_flags);
+#else
 	huge_mnt = drm_gem_get_huge_mnt(&i915->drm);
 	if (!(flags & I915_BO_ALLOC_NOTHP) && huge_mnt)
 		filp = shmem_file_setup_with_mnt(huge_mnt, "i915", size,
 						 shmem_flags);
 	else
 		filp = shmem_file_setup("i915", size, shmem_flags);
+#endif
 	if (IS_ERR(filp))
 		return PTR_ERR(filp);
 
@@ -703,6 +717,21 @@ fail:
 	return ERR_PTR(err);
 }
 
+#if LINUX_VERSION_CODE < KERNEL_VERSION(7, 0, 0)
+static int init_shmem(struct intel_memory_region *mem)
+{
+	i915_gemfs_init(mem->i915);
+	intel_memory_region_set_name(mem, "system");
+
+	return 0; /* We have fallback to the kernel mnt if gemfs init failed. */
+}
+
+static int release_shmem(struct intel_memory_region *mem)
+{
+	i915_gemfs_fini(mem->i915);
+	return 0;
+}
+#else
 static int init_shmem(struct intel_memory_region *mem)
 {
 	struct drm_i915_private *i915 = mem->i915;
@@ -736,9 +765,13 @@ static int init_shmem(struct intel_memory_region *mem)
 
 	return 0; /* We have fallback to the kernel mnt if huge mnt failed. */
 }
+#endif
 
 static const struct intel_memory_region_ops shmem_region_ops = {
 	.init = init_shmem,
+#if LINUX_VERSION_CODE < KERNEL_VERSION(7, 0, 0)
+	.release = release_shmem,
+#endif
 	.init_object = shmem_object_init,
 };
 
