@@ -1,4 +1,4 @@
-# Linux Guest Installation Steps (Ubuntu 25.04/Kernel 6.14)
+# Linux Guest Installation Steps
 
 We will need to run the same driver under Linux guests.
 
