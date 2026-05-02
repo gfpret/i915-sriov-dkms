@@ -54,16 +54,8 @@
 #include "intel_gvt.h"
 #include "sched_policy.h"
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 13, 0)
-MODULE_IMPORT_NS(DMA_BUF);
-#else
 MODULE_IMPORT_NS("DMA_BUF");
-#endif
-#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 13, 0)
-MODULE_IMPORT_NS(I915_GVT);
-#else
 MODULE_IMPORT_NS("I915_GVT");
-#endif
 
 /* helper macros copied from vfio-pci */
 #define VFIO_PCI_OFFSET_SHIFT   40
@@ -2138,8 +2130,4 @@ MODULE_AUTHOR("Intel Corporation");
 MODULE_VERSION(DKMS_MODULE_VERSION);
 #endif
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 13, 0)
-MODULE_IMPORT_NS(INTEL_SRIOV_COMPAT);
-#else
 MODULE_IMPORT_NS("INTEL_SRIOV_COMPAT");
-#endif

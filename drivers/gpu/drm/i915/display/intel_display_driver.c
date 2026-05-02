@@ -12,9 +12,7 @@
 #include <drm/display/drm_dp_mst_helper.h>
 #include <drm/drm_atomic_helper.h>
 #include <drm/drm_client.h>
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 13, 0)
 #include <drm/drm_client_event.h>
-#endif
 #include <drm/drm_mode_config.h>
 #include <drm/drm_privacy_screen_consumer.h>
 #include <drm/drm_print.h>

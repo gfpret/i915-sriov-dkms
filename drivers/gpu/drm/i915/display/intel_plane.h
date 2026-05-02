@@ -87,10 +87,8 @@ int intel_plane_add_affected(struct intel_atomic_state *state,
 int intel_plane_atomic_check(struct intel_atomic_state *state);
 
 
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 16, 0)
 bool intel_plane_format_mod_supported_async(struct drm_plane *plane,
 					    u32 format,
 					    u64 modifier);
-#endif
 
 #endif /* __INTEL_PLANE_H__ */

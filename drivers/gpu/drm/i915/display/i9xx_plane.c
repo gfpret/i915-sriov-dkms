@@ -887,9 +887,7 @@ static const struct drm_plane_funcs i965_plane_funcs = {
 	.atomic_duplicate_state = intel_plane_duplicate_state,
 	.atomic_destroy_state = intel_plane_destroy_state,
 	.format_mod_supported = i965_plane_format_mod_supported,
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 16, 0)
 	.format_mod_supported_async = intel_plane_format_mod_supported_async,
-#endif
 };
 
 static const struct drm_plane_funcs i8xx_plane_funcs = {
@@ -899,9 +897,7 @@ static const struct drm_plane_funcs i8xx_plane_funcs = {
 	.atomic_duplicate_state = intel_plane_duplicate_state,
 	.atomic_destroy_state = intel_plane_destroy_state,
 	.format_mod_supported = i8xx_plane_format_mod_supported,
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 16, 0)
 	.format_mod_supported_async = intel_plane_format_mod_supported_async,
-#endif
 };
 
 static void i9xx_disable_tiling(struct intel_plane *plane)
@@ -1205,11 +1201,7 @@ i9xx_get_initial_plane_config(struct intel_crtc *crtc,
 	pixel_format = val & DISP_FORMAT_MASK;
 	fourcc = i9xx_format_to_fourcc(pixel_format);
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 17, 0)
-	fb->format = backport__drm_get_format_info6p16(display->drm, fourcc, fb->modifier);
-#else
 	fb->format = drm_get_format_info(display->drm, fourcc, fb->modifier);
-#endif
 
 	if (display->platform.haswell || display->platform.broadwell) {
 		offset = intel_de_read(display,

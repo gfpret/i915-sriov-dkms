@@ -1251,10 +1251,6 @@ static int op_add_deps(struct xe_vm *vm, struct xe_vma_op *op,
 	 * NOP if VMA is_cpu_addr_mirror
 	 */
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 15, 0)
-	__diag_push();
-	__diag_ignore_all("-Wswitch", "We need extend enum in older kernels");
-#endif
 
 	switch (op->base.op) {
 	case DRM_GPUVA_OP_MAP:
@@ -1280,9 +1276,6 @@ static int op_add_deps(struct xe_vm *vm, struct xe_vma_op *op,
 		drm_warn(&vm->xe->drm, "NOT POSSIBLE");
 	}
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 15, 0)
-	__diag_pop();
-#endif
 
 	return err;
 }
@@ -1443,10 +1436,6 @@ static int op_check_svm_userptr(struct xe_vm *vm, struct xe_vma_op *op,
 
 	xe_svm_assert_held_read(vm);
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 15, 0)
-	__diag_push();
-	__diag_ignore_all("-Wswitch", "We need extend enum in older kernels");
-#endif
 
 	switch (op->base.op) {
 	case DRM_GPUVA_OP_MAP:
@@ -1502,9 +1491,6 @@ static int op_check_svm_userptr(struct xe_vm *vm, struct xe_vma_op *op,
 		drm_warn(&vm->xe->drm, "NOT POSSIBLE");
 	}
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 15, 0)
-	__diag_pop();
-#endif
 
 	return err;
 }
@@ -2196,10 +2182,6 @@ static int op_prepare(struct xe_vm *vm,
 
 	xe_vm_assert_held(vm);
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 15, 0)
-	__diag_push();
-	__diag_ignore_all("-Wswitch", "We need extend enum in older kernels");
-#endif
 
 	switch (op->base.op) {
 	case DRM_GPUVA_OP_MAP:
@@ -2279,9 +2261,6 @@ static int op_prepare(struct xe_vm *vm,
 		drm_warn(&vm->xe->drm, "NOT POSSIBLE");
 	}
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 15, 0)
-	__diag_pop();
-#endif
 
 	return err;
 }
@@ -2437,10 +2416,6 @@ static void op_commit(struct xe_vm *vm,
 {
 	xe_vm_assert_held(vm);
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 15, 0)
-	__diag_push();
-	__diag_ignore_all("-Wswitch", "We need extend enum in older kernels");
-#endif
 
 	switch (op->base.op) {
 	case DRM_GPUVA_OP_MAP:
@@ -2509,9 +2484,6 @@ static void op_commit(struct xe_vm *vm,
 		drm_warn(&vm->xe->drm, "NOT POSSIBLE");
 	}
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 15, 0)
-	__diag_pop();
-#endif
 }
 
 static const struct xe_migrate_pt_update_ops migrate_ops = {

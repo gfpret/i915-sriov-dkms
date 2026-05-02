@@ -365,7 +365,6 @@ struct intel_panic {
 	void *vaddr;
 };
 
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 17, 0)
 static void i915_panic_kunmap(struct intel_panic *panic)
 {
 	if (panic->vaddr) {
@@ -433,7 +432,6 @@ static void i915_gem_object_panic_page_set_pixel(struct drm_scanout_buffer *sb, 
 		*pix = color;
 	}
 }
-#endif
 
 struct intel_panic *i915_gem_object_alloc_panic(void)
 {
@@ -449,7 +447,6 @@ struct intel_panic *i915_gem_object_alloc_panic(void)
  * Use current vaddr if it exists, or setup a list of pages.
  * pfn is not supported yet.
  */
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 17, 0)
 int i915_gem_object_panic_setup(struct intel_panic *panic, struct drm_scanout_buffer *sb,
 				struct drm_gem_object *_obj, bool panic_tiling)
 {
@@ -486,7 +483,6 @@ void i915_gem_object_panic_finish(struct intel_panic *panic)
 	kfree(panic->pages);
 	panic->pages = NULL;
 }
-#endif
 
 /* get, pin, and map the pages of the object into kernel space */
 void *i915_gem_object_pin_map(struct drm_i915_gem_object *obj,

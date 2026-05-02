@@ -468,11 +468,9 @@ struct xe_device *xe_device_create(struct pci_dev *pdev,
 	if (err)
 		goto err;
 
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 15, 0)
 	err = xe_shrinker_create(xe);
 	if (err)
 		goto err;
-#endif
 
 	xe->info.devid = pdev->device;
 	xe->info.revid = pdev->revision;
@@ -1333,13 +1331,7 @@ void xe_device_declare_wedged(struct xe_device *xe)
 						    DRM_WEDGE_RECOVERY_BUS_RESET);
 
 		/* Notify userspace of wedged device */
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 15, 0)
-#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 17, 0)
-		drm_dev_wedged_event(&xe->drm, xe->wedged.method);
-#else
 		drm_dev_wedged_event(&xe->drm, xe->wedged.method, NULL);
-#endif
-#endif
 	}
 }
 

@@ -157,11 +157,7 @@ int intel_connector_register(struct drm_connector *_connector)
 	struct intel_connector *connector = to_intel_connector(_connector);
 	int ret;
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 16, 0)
-	ret = intel_backlight_device_register(connector);
-#else
 	ret = intel_panel_register(connector);
-#endif
 	if (ret)
 		return ret;
 
@@ -175,11 +171,7 @@ void intel_connector_unregister(struct drm_connector *_connector)
 {
 	struct intel_connector *connector = to_intel_connector(_connector);
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 16, 0)
-	intel_backlight_device_unregister(connector);
-#else
 	intel_panel_unregister(connector);
-#endif
 }
 
 void intel_connector_attach_encoder(struct intel_connector *connector,

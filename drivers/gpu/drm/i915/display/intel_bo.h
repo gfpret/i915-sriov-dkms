@@ -7,9 +7,7 @@
 #include <linux/types.h>
 
 struct drm_gem_object;
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 17, 0)
 struct drm_scanout_buffer;
-#endif
 struct intel_framebuffer;
 struct seq_file;
 struct vm_area_struct;

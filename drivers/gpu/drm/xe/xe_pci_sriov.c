@@ -82,7 +82,6 @@ static void pf_engine_activity_stats(struct xe_device *xe, unsigned int num_vfs,
 	}
 }
 
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 17, 0)  // incompatible before 6.17
 static int resize_vf_vram_bar(struct xe_device *xe, int num_vfs)
 {
 	struct pci_dev *pdev = to_pci_dev(xe->drm.dev);
@@ -94,7 +93,6 @@ static int resize_vf_vram_bar(struct xe_device *xe, int num_vfs)
 
 	return pci_iov_vf_bar_set_size(pdev, VF_LMEM_BAR, __fls(sizes));
 }
-#endif
 
 static int pf_prepare_vfs_enabling(struct xe_device *xe)
 {
@@ -144,13 +142,11 @@ static int pf_enable_vfs(struct xe_device *xe, int num_vfs)
 	if (err < 0)
 		goto failed;
 
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 17, 0) 
 	if (IS_DGFX(xe)) {
 		err = resize_vf_vram_bar(xe, num_vfs);
 		if (err)
 			xe_sriov_info(xe, "Failed to set VF LMEM BAR size: %d\n", err);
 	}
-#endif
 
 	err = pci_enable_sriov(pdev, num_vfs);
 	if (err < 0)

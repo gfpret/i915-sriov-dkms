@@ -2,9 +2,7 @@
 /* Copyright © 2024 Intel Corporation */
 
 
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 17, 0)
 #include <drm/drm_panic.h>
-#endif
 
 #include "gem/i915_gem_mman.h"
 #include "gem/i915_gem_object.h"

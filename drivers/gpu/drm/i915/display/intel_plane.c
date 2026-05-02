@@ -189,7 +189,6 @@ bool intel_plane_can_async_flip(struct intel_plane *plane,
 	return plane->can_async_flip && plane->can_async_flip(modifier);
 }
 
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 16, 0)
 bool intel_plane_format_mod_supported_async(struct drm_plane *_plane,
 					    u32 format, u64 modifier)
 {
@@ -203,7 +202,6 @@ bool intel_plane_format_mod_supported_async(struct drm_plane *_plane,
 
 	return intel_plane_can_async_flip(plane, info, modifier);
 }
-#endif
 
 unsigned int intel_adjusted_rate(const struct drm_rect *src,
 				 const struct drm_rect *dst,
@@ -323,17 +321,10 @@ static void intel_plane_clear_hw_state(struct intel_plane_state *plane_state)
 	memset(&plane_state->hw, 0, sizeof(plane_state->hw));
 }
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 15, 0)
-static void
-intel_plane_copy_uapi_plane_damage(struct intel_plane_state *new_plane_state,
-				   const struct intel_plane_state *old_uapi_plane_state,
-				   struct intel_plane_state *new_uapi_plane_state)
-#else
 static void
 intel_plane_copy_uapi_plane_damage(struct intel_plane_state *new_plane_state,
 				   const struct intel_plane_state *old_uapi_plane_state,
 				   const struct intel_plane_state *new_uapi_plane_state)
-#endif
 {
 	struct intel_display *display = to_intel_display(new_plane_state);
 	struct drm_rect *damage = &new_plane_state->damage;
@@ -782,11 +773,7 @@ static int plane_atomic_check(struct intel_atomic_state *state,
 		intel_atomic_get_new_plane_state(state, plane);
 	const struct intel_plane_state *old_plane_state =
 		intel_atomic_get_old_plane_state(state, plane);
-#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 15, 0)
-	struct intel_plane_state *new_primary_crtc_plane_state;
-#else
 	const struct intel_plane_state *new_primary_crtc_plane_state;
-#endif
 	const struct intel_plane_state *old_primary_crtc_plane_state;
 	struct intel_crtc *crtc = intel_crtc_for_pipe(display, plane->pipe);
 	const struct intel_crtc_state *old_crtc_state =
@@ -1311,7 +1298,6 @@ intel_cleanup_plane_fb(struct drm_plane *plane,
 	intel_plane_unpin_fb(old_plane_state);
 }
 
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 17, 0)
 /* Handle Y-tiling, only if DPT is enabled (otherwise disabling tiling is easier)
  * All DPT hardware have 128-bytes width tiling, so Y-tile dimension is 32x32
  * pixels for 32bits pixels.
@@ -1462,28 +1448,19 @@ static int intel_get_scanout_buffer(struct drm_plane *plane,
 
 	return 0;
 }
-#endif
 
 static const struct drm_plane_helper_funcs intel_plane_helper_funcs = {
 	.prepare_fb = intel_prepare_plane_fb,
 	.cleanup_fb = intel_cleanup_plane_fb,
 };
 
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 17, 0)
 static const struct drm_plane_helper_funcs intel_primary_plane_helper_funcs = {
 	.prepare_fb = intel_prepare_plane_fb,
 	.cleanup_fb = intel_cleanup_plane_fb,
 	.get_scanout_buffer = intel_get_scanout_buffer,
 	.panic_flush = intel_panic_flush,
 };
-#endif
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 17, 0)
-void intel_plane_helper_add(struct intel_plane *plane)
-{
-	drm_plane_helper_add(&plane->base, &intel_plane_helper_funcs);
-}
-#else
 void intel_plane_helper_add(struct intel_plane *plane)
 {
 	if (plane->base.type == DRM_PLANE_TYPE_PRIMARY)
@@ -1491,7 +1468,6 @@ void intel_plane_helper_add(struct intel_plane *plane)
 	else
 		drm_plane_helper_add(&plane->base, &intel_plane_helper_funcs);
 }
-#endif
 
 void intel_plane_init_cursor_vblank_work(struct intel_plane_state *old_plane_state,
 					 struct intel_plane_state *new_plane_state)

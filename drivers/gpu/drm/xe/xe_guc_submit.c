@@ -1460,19 +1460,9 @@ guc_exec_queue_timedout_job(struct drm_sched_job *drm_job)
 	 * lost.
 	 */
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 17, 0)
-	if (test_bit(DMA_FENCE_FLAG_SIGNALED_BIT, &job->fence->flags) ||
-	    vf_recovery(guc)) {
-		xe_sched_add_pending_job(sched, job);
-		xe_sched_submission_start(sched);
-
-		return DRM_GPU_SCHED_STAT_NOMINAL;
-	}
-#else
 	if (test_bit(DMA_FENCE_FLAG_SIGNALED_BIT, &job->fence->flags) ||
 	    vf_recovery(guc))
 		return DRM_GPU_SCHED_STAT_NO_HANG;
-#endif
 
 	/* Kill the run_job entry point */
 	xe_sched_submission_stop(sched);
@@ -1626,15 +1616,11 @@ trigger_reset:
 	else
 		xe_guc_exec_queue_trigger_cleanup(q);
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 17, 0)
-	return DRM_GPU_SCHED_STAT_NOMINAL;
-#else
 	/*
 	 * We want the job added back to the pending list so it gets freed; this
 	 * is what DRM_GPU_SCHED_STAT_NO_HANG does.
 	 */
 	return DRM_GPU_SCHED_STAT_NO_HANG;
-#endif
 
 rearm:
 	/*
@@ -1642,16 +1628,9 @@ rearm:
 	 * but there is not currently an easy way to do in DRM scheduler. With
 	 * some thought, do this in a follow up.
 	 */
-#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 17, 0)
-	xe_sched_add_pending_job(sched, job);
-	xe_sched_submission_start(sched);
-handle_vf_resume:
-	return DRM_GPU_SCHED_STAT_NOMINAL;
-#else
 	xe_sched_submission_start(sched);
 handle_vf_resume:
 	return DRM_GPU_SCHED_STAT_NO_HANG;
-#endif
 }
 
 static void guc_exec_queue_fini(struct xe_exec_queue *q)

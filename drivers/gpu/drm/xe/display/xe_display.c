@@ -9,9 +9,7 @@
 #include <linux/fb.h>
 
 #include <drm/drm_client.h>
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 13, 0)
 #include <drm/drm_client_event.h>
-#endif
 #include <drm/drm_drv.h>
 #include <drm/drm_managed.h>
 #include <drm/drm_probe_helper.h>
@@ -336,9 +334,7 @@ void xe_display_pm_suspend(struct xe_device *xe)
 	 */
 	intel_power_domains_disable(display);
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 13, 0)
-	intel_fbdev_set_suspend(&xe->drm, FBINFO_STATE_SUSPENDED, true);
-#elif LINUX_VERSION_CODE < KERNEL_VERSION(6, 19, 0)
+#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 19, 0)
 	drm_client_dev_suspend(&xe->drm, false);
 #else
 	drm_client_dev_suspend(&xe->drm);
@@ -376,9 +372,7 @@ void xe_display_pm_shutdown(struct xe_device *xe)
 
 	intel_power_domains_disable(display);
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 13, 0)
-	intel_fbdev_set_suspend(&xe->drm, FBINFO_STATE_SUSPENDED, true);
-#elif LINUX_VERSION_CODE < KERNEL_VERSION(6, 19, 0)
+#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 19, 0)
 	drm_client_dev_suspend(&xe->drm, false);
 #else 
 	drm_client_dev_suspend(&xe->drm);
@@ -507,9 +501,7 @@ void xe_display_pm_resume(struct xe_device *xe)
 
 	intel_opregion_resume(display);
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 13, 0)
-	intel_fbdev_set_suspend(&xe->drm, FBINFO_STATE_RUNNING, false);
-#elif LINUX_VERSION_CODE < KERNEL_VERSION(6, 19, 0)
+#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 19, 0)
 	drm_client_dev_resume(&xe->drm, false);
 #else
 	drm_client_dev_resume(&xe->drm);

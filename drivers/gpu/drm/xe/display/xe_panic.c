@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 /* Copyright © 2025 Intel Corporation */
 
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 17, 0)
 #include <drm/drm_cache.h>
 #include <drm/drm_panic.h>
 #include <drm/intel/display_parent_interface.h>
@@ -103,4 +102,3 @@ const struct intel_display_panic_interface xe_display_panic_interface = {
 	.setup = xe_panic_setup,
 	.finish = xe_panic_kunmap,
 };
-#endif

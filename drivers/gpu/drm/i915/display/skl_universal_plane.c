@@ -2701,9 +2701,7 @@ static const struct drm_plane_funcs skl_plane_funcs = {
 	.atomic_duplicate_state = intel_plane_duplicate_state,
 	.atomic_destroy_state = intel_plane_destroy_state,
 	.format_mod_supported = skl_plane_format_mod_supported,
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 16, 0)
 	.format_mod_supported_async = intel_plane_format_mod_supported_async,
-#endif
 };
 
 static const struct drm_plane_funcs icl_plane_funcs = {
@@ -2713,9 +2711,7 @@ static const struct drm_plane_funcs icl_plane_funcs = {
 	.atomic_duplicate_state = intel_plane_duplicate_state,
 	.atomic_destroy_state = intel_plane_destroy_state,
 	.format_mod_supported = icl_plane_format_mod_supported,
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 16, 0)
 	.format_mod_supported_async = intel_plane_format_mod_supported_async,
-#endif
 };
 
 static const struct drm_plane_funcs tgl_plane_funcs = {
@@ -2725,9 +2721,7 @@ static const struct drm_plane_funcs tgl_plane_funcs = {
 	.atomic_duplicate_state = intel_plane_duplicate_state,
 	.atomic_destroy_state = intel_plane_destroy_state,
 	.format_mod_supported = tgl_plane_format_mod_supported,
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 16, 0)
 	.format_mod_supported_async = intel_plane_format_mod_supported_async,
-#endif
 };
 
 static void
@@ -3162,11 +3156,7 @@ skl_get_initial_plane_config(struct intel_crtc *crtc,
 		goto error;
 	}
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 17, 0)
-	fb->format = backport__drm_get_format_info6p16(display->drm, fourcc, fb->modifier);
-#else
 	fb->format = drm_get_format_info(display->drm, fourcc, fb->modifier);
-#endif
 
 	if (!display->params.enable_dpt &&
 	    intel_fb_modifier_uses_dpt(display, fb->modifier)) {
