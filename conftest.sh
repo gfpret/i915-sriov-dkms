@@ -19,7 +19,7 @@ fi
 CFLAGS="$NOSTDINC_FLAGS $LINUXINCLUDE $KBUILD_CPPFLAGS $KBUILD_CFLAGS $KBUILD_MODFLAGS \
  -DKBUILD_BASENAME=\"conftest\" -DKBUILD_MODNAME=\"conftest\" \
  -Werror=implicit-function-declaration -Wno-missing-prototypes 
- -Wno-unused-function 
+ -Wno-unused-function -Wno-unused-variable
 "
 
 TMPDIR="${KBUILD_EXTMOD:-.}/conftest_tmp"
@@ -73,6 +73,40 @@ ct_copy_from_user_inatomic_nontemporal() {
 	"
 
 	compile_check "$CODE" "IDB_COPY_FROM_USER_INATOMIC_NONTEMPORAL" 1
+}
+
+ct_pci_resize_resource_4args() {
+	CODE="
+	#include <linux/pci.h>
+	static void conftest_pci_resize_resource_4args(void)
+	{
+		pci_resize_resource(NULL, 0, 0, 0);
+	}
+	"
+
+	compile_check "$CODE" "IDB_PCI_RESIZE_RESOURCE_4ARGS" 1
+}
+
+ct_xe_pmt_telem_read_pci_device() {
+	CODE="
+	#include <linux/pci.h>
+	#include <linux/intel_vsec.h>
+	static int xe_pmt_telem_read(struct pci_dev *pdev, u32 guid, u64 *data, loff_t user_offset, u32 count)
+	{
+		(void)pdev;
+		(void)guid;
+		(void)data;
+		(void)user_offset;
+		(void)count;
+		return 0;
+	}
+
+	static struct pmt_callbacks xe_pmt_cb = {
+		.read_telem = xe_pmt_telem_read,
+	};
+	"
+
+	compile_check "$CODE" "IDB_XE_PMT_TELEM_READ_USE_PCI_DEV" 1
 }
 
 case "${ACTION}" in

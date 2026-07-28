@@ -3,7 +3,7 @@
 #ifndef __BACKPORT_LINUX_SLAB_H__
 #define __BACKPORT_LINUX_SLAB_H__
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(7, 0, 0)
+#ifndef __alloc_objs
 /**
  * __alloc_objs - Allocate objects of a given type using
  * @KMALLOC: which size-based kmalloc wrapper to allocate with.
@@ -19,7 +19,9 @@
 	const size_t __obj_size = size_mul(sizeof(TYPE), COUNT);	\
 	(TYPE *)KMALLOC(__obj_size, GFP);				\
 })
+#endif
 
+#ifndef __alloc_flex
 /**
  * __alloc_flex - Allocate an object that has a trailing flexible array
  * @KMALLOC: kmalloc wrapper function to use for allocation.
@@ -46,7 +48,9 @@
 		__set_flex_counter(__obj_ptr->FAM, __count);		\
 	__obj_ptr;							\
 })
+#endif
 
+#ifndef kmalloc_obj
 /**
  * kmalloc_obj - Allocate a single instance of the given type
  * @VAR_OR_TYPE: Variable or type to allocate.
@@ -57,7 +61,9 @@
  */
 #define kmalloc_obj(VAR_OR_TYPE, ...) \
 	__alloc_objs(kmalloc, default_gfp(__VA_ARGS__), typeof(VAR_OR_TYPE), 1)
+#endif
 
+#ifndef kmalloc_objs
 /**
  * kmalloc_objs - Allocate an array of the given type
  * @VAR_OR_TYPE: Variable or type to allocate an array of.
@@ -69,7 +75,9 @@
  */
 #define kmalloc_objs(VAR_OR_TYPE, COUNT, ...) \
 	__alloc_objs(kmalloc, default_gfp(__VA_ARGS__), typeof(VAR_OR_TYPE), COUNT)
+#endif
 
+#ifndef kmalloc_flex
 /**
  * kmalloc_flex - Allocate a single instance of the given flexible structure
  * @VAR_OR_TYPE: Variable or type to allocate (with its flex array).
@@ -84,28 +92,52 @@
  */
 #define kmalloc_flex(VAR_OR_TYPE, FAM, COUNT, ...) \
 	__alloc_flex(kmalloc, default_gfp(__VA_ARGS__), typeof(VAR_OR_TYPE), FAM, COUNT)
+#endif
 
 /* All kzalloc aliases for kmalloc_(obj|objs|flex). */
+#ifndef kzalloc_obj
 #define kzalloc_obj(P, ...) \
 	__alloc_objs(kzalloc, default_gfp(__VA_ARGS__), typeof(P), 1)
+#endif
+
+#ifndef kzalloc_objs
 #define kzalloc_objs(P, COUNT, ...) \
 	__alloc_objs(kzalloc, default_gfp(__VA_ARGS__), typeof(P), COUNT)
+#endif
+
+#ifndef kzalloc_flex
 #define kzalloc_flex(P, FAM, COUNT, ...)		\
 	__alloc_flex(kzalloc, default_gfp(__VA_ARGS__), typeof(P), FAM, COUNT)
+#endif
 
 /* All kvmalloc aliases for kmalloc_(obj|objs|flex). */
+#ifndef kvmalloc_obj
 #define kvmalloc_obj(P, ...) \
 	__alloc_objs(kvmalloc, default_gfp(__VA_ARGS__), typeof(P), 1)
+#endif
+
+#ifndef kvmalloc_objs
 #define kvmalloc_objs(P, COUNT, ...) \
 	__alloc_objs(kvmalloc, default_gfp(__VA_ARGS__), typeof(P), COUNT)
+#endif
+
+#ifndef kvmalloc_flex
 #define kvmalloc_flex(P, FAM, COUNT, ...) \
 	__alloc_flex(kvmalloc, default_gfp(__VA_ARGS__), typeof(P), FAM, COUNT)
+#endif
 
 /* All kvzalloc aliases for kmalloc_(obj|objs|flex). */
+#ifndef kvzalloc_obj
 #define kvzalloc_obj(P, ...) \
 	__alloc_objs(kvzalloc, default_gfp(__VA_ARGS__), typeof(P), 1)
+#endif
+
+#ifndef kvzalloc_objs
 #define kvzalloc_objs(P, COUNT, ...) \
 	__alloc_objs(kvzalloc, default_gfp(__VA_ARGS__), typeof(P), COUNT)
+#endif
+
+#ifndef kvzalloc_flex
 #define kvzalloc_flex(P, FAM, COUNT, ...) \
 	__alloc_flex(kvzalloc, default_gfp(__VA_ARGS__), typeof(P), FAM, COUNT)
 #endif

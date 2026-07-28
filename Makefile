@@ -22,7 +22,9 @@ CONFTEST_DIR := $(src)/conftest
 CONFTEST_H := $(CONFTEST_DIR)/results.h
 
 CONFTEST_COMPILE_TESTS := \
-	copy_from_user_inatomic_nontemporal
+	copy_from_user_inatomic_nontemporal \
+	pci_resize_resource_4args \
+	xe_pmt_telem_read_pci_device
 
 ifneq ($(filter 1 y,$(KBUILD_MODULES)),)
 ifeq ($(wildcard $(CONFTEST_H)),)

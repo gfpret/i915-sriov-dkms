@@ -18,10 +18,10 @@ static void resize_bar(struct xe_device *xe, int resno, resource_size_t size)
 	int bar_size = pci_rebar_bytes_to_size(size);
 	int ret;
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 19, 0)
-	ret = pci_resize_resource(pdev, resno, bar_size);
-#else
+#ifdef IDB_PCI_RESIZE_RESOURCE_4ARGS
 	ret = pci_resize_resource(pdev, resno, bar_size, 0);
+#else
+	ret = pci_resize_resource(pdev, resno, bar_size);
 #endif
 	if (ret) {
 		xe_info(xe, "Failed to resize BAR%d to %dMiB (%pe). Consider enabling 'Resizable BAR' support in your BIOS\n",

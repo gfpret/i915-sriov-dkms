@@ -43,10 +43,10 @@ _resize_bar(struct drm_i915_private *i915, int resno, resource_size_t size)
 	_release_bars(pdev);
 #endif
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 19, 0)
-	ret = pci_resize_resource(pdev, resno, bar_size);
-#else
+#ifdef IDB_PCI_RESIZE_RESOURCE_4ARGS
 	ret = pci_resize_resource(pdev, resno, bar_size, 0);
+#else
+	ret = pci_resize_resource(pdev, resno, bar_size);
 #endif
 	if (ret) {
 		drm_info(&i915->drm, "Failed to resize BAR%d to %dM (%pe)\n",
