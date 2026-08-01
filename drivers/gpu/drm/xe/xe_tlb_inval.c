@@ -487,6 +487,7 @@ bool xe_tlb_inval_idle(struct xe_tlb_inval *tlb_inval)
 	return list_is_singular(&tlb_inval->pending_fences);
 }
 
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(7, 1, 0)
 /**
  * xe_tlb_inval_batch_wait() - Wait for all fences in a TLB invalidation batch
  * @batch: Batch of TLB invalidation fences to wait on
@@ -570,3 +571,4 @@ wait:
 
 	return err;
 }
+#endif

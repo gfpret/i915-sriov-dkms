@@ -148,7 +148,11 @@ __dma_fence_signal__notify(struct dma_fence *fence,
 {
 	struct dma_fence_cb *cur, *tmp;
 
+#if LINUX_VERSION_CODE < KERNEL_VERSION(7, 1, 0)
+	lockdep_assert_held(fence->lock);
+#else
 	dma_fence_assert_held(fence);
+#endif
 
 	list_for_each_entry_safe(cur, tmp, list, node) {
 		INIT_LIST_HEAD(&cur->node);

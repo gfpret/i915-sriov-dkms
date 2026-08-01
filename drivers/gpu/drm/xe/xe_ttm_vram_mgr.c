@@ -4,9 +4,10 @@
  * Copyright (C) 2021-2022 Red Hat
  */
 
+#include <linux/gpu_buddy.h>
+
 #include <drm/drm_managed.h>
 #include <drm/drm_drv.h>
-#include <drm/drm_buddy.h>
 
 #include <drm/ttm/ttm_placement.h>
 #include <drm/ttm/ttm_range_manager.h>

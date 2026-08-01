@@ -6,13 +6,15 @@
 #include "xe_vm_madvise.h"
 
 #include <linux/nospec.h>
-#include <drm/xe_drm.h>
+#include <uapi/drm/xe_drm.h>
 
 #include "xe_bo.h"
 #include "xe_pat.h"
 #include "xe_pt.h"
 #include "xe_svm.h"
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(7, 1, 0)
 #include "xe_tlb_inval.h"
+#endif
 #include "xe_vm.h"
 
 struct xe_vmas_in_madvise_range {
@@ -316,20 +318,25 @@ static u8 xe_zap_ptes_in_madvise_range(struct xe_vm *vm, u64 start, u64 end)
 static int xe_vm_invalidate_madvise_range(struct xe_vm *vm, u64 start, u64 end)
 {
 	u8 tile_mask = xe_zap_ptes_in_madvise_range(vm, start, end);
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(7, 1, 0)
 	struct xe_tlb_inval_batch batch;
 	int err;
+#endif
 
 	if (!tile_mask)
 		return 0;
 
 	xe_device_wmb(vm->xe);
 
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(7, 1, 0)
 	err = xe_tlb_inval_range_tilemask_submit(vm->xe, vm->usm.asid, start, end,
 						 tile_mask, &batch);
 	if (!err)
 		xe_tlb_inval_batch_wait(&batch);
-
 	return err;
+#else
+	return xe_vm_range_tilemask_tlb_inval(vm, start, end, tile_mask);
+#endif
 }
 
 static bool madvise_args_are_sane(struct xe_device *xe, const struct drm_xe_madvise *args)

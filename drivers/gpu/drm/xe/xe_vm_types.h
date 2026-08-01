@@ -18,7 +18,9 @@
 #include "xe_device_types.h"
 #include "xe_pt_types.h"
 #include "xe_range_fence.h"
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(7, 1, 0)
 #include "xe_tlb_inval_types.h"
+#endif
 #include "xe_userptr.h"
 
 struct drm_pagemap;

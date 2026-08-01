@@ -325,7 +325,11 @@ static void xe_dma_buf_move_notify(struct dma_buf_attachment *attach)
 
 static const struct dma_buf_attach_ops xe_dma_buf_attach_ops = {
 	.allow_peer2peer = true,
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(7, 1, 0)
 	.invalidate_mappings = xe_dma_buf_move_notify
+#else
+	.move_notify = xe_dma_buf_move_notify
+#endif
 };
 
 #if IS_ENABLED(CONFIG_DRM_XE_KUNIT_TEST)

@@ -7,7 +7,7 @@
 #define _XE_DRM_RAS_TYPES_H_
 
 #include <linux/atomic.h>
-#include <drm/xe_drm.h>
+#include <uapi/drm/xe_drm.h>
 
 struct drm_ras_node;
 

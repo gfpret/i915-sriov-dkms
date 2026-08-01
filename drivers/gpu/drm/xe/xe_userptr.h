@@ -58,6 +58,7 @@ struct xe_userptr {
 	 * @notifier: MMU notifier for user pointer (invalidation call back)
 	 */
 	struct mmu_interval_notifier notifier;
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(7, 1, 0)
 	/**
 	 * @finish: MMU notifier finish structure for two-pass invalidation.
 	 * Embedded here to avoid allocation in the notifier callback.
@@ -86,6 +87,7 @@ struct xe_userptr {
 	 * Protected using the same locking as @finish.
 	 */
 	bool tlb_inval_submitted;
+#endif
 	/**
 	 * @initial_bind: user pointer has been bound at least once.
 	 * write: vm->svm.gpusvm.notifier_lock in read mode and vm->resv held.

@@ -17,9 +17,11 @@
 #define PLANE_DEGAMMA_SIZE 128
 #define PLANE_GAMMA_SIZE 32
 
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(7, 1, 0)
 static const struct drm_colorop_funcs intel_colorop_funcs = {
 	.destroy = intel_colorop_destroy,
 };
+#endif
 
 /*
  * 3DLUT can be bound to all three HDR planes. However, even with the latest
@@ -68,30 +70,57 @@ struct intel_colorop *intel_color_pipeline_plane_add_colorop(struct drm_plane *p
 
 	switch (id) {
 	case INTEL_PLANE_CB_PRE_CSC_LUT:
+#if LINUX_VERSION_CODE < KERNEL_VERSION(7, 1, 0)
+		ret = drm_plane_colorop_curve_1d_lut_init(dev,
+							  &colorop->base, plane,
+							  PLANE_DEGAMMA_SIZE,
+							  DRM_COLOROP_LUT1D_INTERPOLATION_LINEAR,
+							  DRM_COLOROP_FLAG_ALLOW_BYPASS);
+#else
 		ret = drm_plane_colorop_curve_1d_lut_init(dev,
 							  &colorop->base, plane,
 							  &intel_colorop_funcs,
 							  PLANE_DEGAMMA_SIZE,
 							  DRM_COLOROP_LUT1D_INTERPOLATION_LINEAR,
 							  DRM_COLOROP_FLAG_ALLOW_BYPASS);
+#endif
 		break;
 	case INTEL_PLANE_CB_CSC:
+#if LINUX_VERSION_CODE < KERNEL_VERSION(7, 1, 0)
+		ret = drm_plane_colorop_ctm_3x4_init(dev, &colorop->base, plane,
+						     DRM_COLOROP_FLAG_ALLOW_BYPASS);
+#else
 		ret = drm_plane_colorop_ctm_3x4_init(dev, &colorop->base, plane,
 						     &intel_colorop_funcs,
 						     DRM_COLOROP_FLAG_ALLOW_BYPASS);
+#endif
 		break;
 	case INTEL_PLANE_CB_3DLUT:
+#if LINUX_VERSION_CODE < KERNEL_VERSION(7, 1, 0)
+		ret = drm_plane_colorop_3dlut_init(dev, &colorop->base, plane,
+						   17,
+						   DRM_COLOROP_LUT3D_INTERPOLATION_TETRAHEDRAL,
+						   true);
+#else
 		ret = drm_plane_colorop_3dlut_init(dev, &colorop->base, plane,
 						   &intel_colorop_funcs, 17,
 						   DRM_COLOROP_LUT3D_INTERPOLATION_TETRAHEDRAL,
 						   true);
+#endif
 		break;
 	case INTEL_PLANE_CB_POST_CSC_LUT:
+#if LINUX_VERSION_CODE < KERNEL_VERSION(7, 1, 0)
+		ret = drm_plane_colorop_curve_1d_lut_init(dev, &colorop->base, plane,
+							  PLANE_GAMMA_SIZE,
+							  DRM_COLOROP_LUT1D_INTERPOLATION_LINEAR,
+							  DRM_COLOROP_FLAG_ALLOW_BYPASS);
+#else
 		ret = drm_plane_colorop_curve_1d_lut_init(dev, &colorop->base, plane,
 							  &intel_colorop_funcs,
 							  PLANE_GAMMA_SIZE,
 							  DRM_COLOROP_LUT1D_INTERPOLATION_LINEAR,
 							  DRM_COLOROP_FLAG_ALLOW_BYPASS);
+#endif
 		break;
 	default:
 		drm_err(plane->dev, "Invalid colorop id [%d]", id);

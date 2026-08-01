@@ -506,12 +506,12 @@ xe_hwmon_energy_get(struct xe_hwmon *hwmon, int channel, long *energy)
 	if (hwmon->xe->info.platform == XE_BATTLEMAGE) {
 		u64 pmt_val;
 
-#ifdef IDB_XE_PMT_TELEM_READ_USE_PCI_DEV
-		ret = xe_pmt_telem_read(to_pci_dev(hwmon->xe->drm.dev),
+#ifndef IDB_XE_PMT_TELEM_READ_USE_PCI_DEV
+		ret = xe_pmt_telem_read(hwmon->xe->drm.dev,
 					xe_mmio_read32(mmio, PUNIT_TELEMETRY_GUID),
 					&pmt_val, BMG_ENERGY_STATUS_PMT_OFFSET,	sizeof(pmt_val));
 #else
-		ret = xe_pmt_telem_read(hwmon->xe->drm.dev,
+		ret = xe_pmt_telem_read(to_pci_dev(hwmon->xe->drm.dev),
 					xe_mmio_read32(mmio, PUNIT_TELEMETRY_GUID),
 					&pmt_val, BMG_ENERGY_STATUS_PMT_OFFSET,	sizeof(pmt_val));
 #endif

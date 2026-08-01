@@ -24,6 +24,7 @@
 #ifndef _XE_RES_CURSOR_H_
 #define _XE_RES_CURSOR_H_
 
+#include <linux/gpu_buddy.h>
 #include <linux/scatterlist.h>
 
 #include <drm/drm_pagemap.h>

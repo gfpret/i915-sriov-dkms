@@ -45,12 +45,12 @@ static void read_residency_counter(struct xe_device *xe, struct xe_mmio *mmio,
 	u64 residency = 0;
 	int ret;
 
-#ifdef IDB_XE_PMT_TELEM_READ_USE_PCI_DEV
-	ret = xe_pmt_telem_read(to_pci_dev(xe->drm.dev),
+#ifndef IDB_XE_PMT_TELEM_READ_USE_PCI_DEV
+	ret = xe_pmt_telem_read(xe->drm.dev,
 				xe_mmio_read32(mmio, PUNIT_TELEMETRY_GUID),
 				&residency, offset, sizeof(residency));
 #else
-	ret = xe_pmt_telem_read(xe->drm.dev,
+	ret = xe_pmt_telem_read(to_pci_dev(xe->drm.dev),
 				xe_mmio_read32(mmio, PUNIT_TELEMETRY_GUID),
 				&residency, offset, sizeof(residency));
 #endif

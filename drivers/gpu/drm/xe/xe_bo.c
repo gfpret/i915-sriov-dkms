@@ -822,7 +822,11 @@ static int xe_bo_move_notify(struct xe_bo *bo,
 
 	/* Don't call move_notify() for imported dma-bufs. */
 	if (ttm_bo->base.dma_buf && !ttm_bo->base.import_attach)
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(7, 1, 0)
 		dma_buf_invalidate_mappings(ttm_bo->base.dma_buf);
+#else
+		dma_buf_move_notify(ttm_bo->base.dma_buf);
+#endif
 
 	/*
 	 * TTM has already nuked the mmap for us (see ttm_bo_unmap_virtual),

@@ -8,9 +8,12 @@
 
 #include <linux/mm.h>
 
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(7, 1, 0)
 #include "xe_tlb_inval.h"
+#endif
 #include "xe_trace_bo.h"
 
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(7, 1, 0)
 static void xe_userptr_assert_in_notifier(struct xe_vm *vm)
 {
 	lockdep_assert(lockdep_is_held_type(&vm->svm.gpusvm.notifier_lock, 0) ||
@@ -18,6 +21,7 @@ static void xe_userptr_assert_in_notifier(struct xe_vm *vm)
 			lockdep_is_held_type(&vm->svm.gpusvm.notifier_lock, 1) &&
 			dma_resv_held(xe_vm_resv(vm))));
 }
+#endif
 
 /**
  * xe_vma_userptr_check_repin() - Advisory check for repin needed
@@ -82,6 +86,7 @@ int xe_vma_userptr_pin_pages(struct xe_userptr_vma *uvma)
 				    &ctx);
 }
 
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(7, 1, 0)
 static struct mmu_interval_notifier_finish *
 xe_vma_userptr_do_inval(struct xe_vm *vm, struct xe_userptr_vma *uvma, bool is_deferred)
 {
@@ -254,11 +259,93 @@ static void xe_vma_userptr_invalidate_finish(struct mmu_interval_notifier_finish
 	up_write(&vm->svm.gpusvm.notifier_lock);
 	trace_xe_vma_userptr_invalidate_complete(vma);
 }
+#else
+static void __vma_userptr_invalidate(struct xe_vm *vm, struct xe_userptr_vma *uvma)
+{
+	struct xe_userptr *userptr = &uvma->userptr;
+	struct xe_vma *vma = &uvma->vma;
+	struct dma_resv_iter cursor;
+	struct dma_fence *fence;
+	struct drm_gpusvm_ctx ctx = {
+		.in_notifier = true,
+		.read_only = xe_vma_read_only(vma),
+	};
+	long err;
 
+	/*
+	 * Tell exec and rebind worker they need to repin and rebind this
+	 * userptr.
+	 */
+	if (!xe_vm_in_fault_mode(vm) &&
+	    !(vma->gpuva.flags & XE_VMA_DESTROYED)) {
+		spin_lock(&vm->userptr.invalidated_lock);
+		list_move_tail(&userptr->invalidate_link,
+			       &vm->userptr.invalidated);
+		spin_unlock(&vm->userptr.invalidated_lock);
+	}
+	/*
+	 * Preempt fences turn into schedule disables, pipeline these.
+	 * Note that even in fault mode, we need to wait for binds and
+	 * unbinds to complete, and those are attached as BOOKMARK fences
+	 * to the vm.
+	 */
+	dma_resv_iter_begin(&cursor, xe_vm_resv(vm),
+			    DMA_RESV_USAGE_BOOKKEEP);
+	dma_resv_for_each_fence_unlocked(&cursor, fence)
+		dma_fence_enable_sw_signaling(fence);
+	dma_resv_iter_end(&cursor);
+
+	err = dma_resv_wait_timeout(xe_vm_resv(vm),
+				    DMA_RESV_USAGE_BOOKKEEP,
+				    false, MAX_SCHEDULE_TIMEOUT);
+	XE_WARN_ON(err <= 0);
+
+	if (xe_vm_in_fault_mode(vm) && userptr->initial_bind) {
+		err = xe_vm_invalidate_vma(vma);
+		XE_WARN_ON(err);
+	}
+
+	drm_gpusvm_unmap_pages(&vm->svm.gpusvm, &uvma->userptr.pages,
+			       xe_vma_size(vma) >> PAGE_SHIFT, &ctx);
+}
+
+static bool vma_userptr_invalidate(struct mmu_interval_notifier *mni,
+				   const struct mmu_notifier_range *range,
+				   unsigned long cur_seq)
+{
+	struct xe_userptr_vma *uvma = container_of(mni, typeof(*uvma), userptr.notifier);
+	struct xe_vma *vma = &uvma->vma;
+	struct xe_vm *vm = xe_vma_vm(vma);
+	xe_assert(vm->xe, xe_vma_is_userptr(vma));
+	trace_xe_vma_userptr_invalidate(vma);
+	if (!mmu_notifier_range_blockable(range))
+		return false;
+
+	vm_dbg(&xe_vma_vm(vma)->xe->drm,
+	       "NOTIFIER: addr=0x%016llx, range=0x%016llx",
+		xe_vma_start(vma), xe_vma_size(vma));
+
+	down_write(&vm->svm.gpusvm.notifier_lock);
+	mmu_interval_set_seq(mni, cur_seq);
+
+	__vma_userptr_invalidate(vm, uvma);
+	up_write(&vm->svm.gpusvm.notifier_lock);
+	trace_xe_vma_userptr_invalidate_complete(vma);
+
+	return true;
+}
+#endif
+
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(7, 1, 0)
 static const struct mmu_interval_notifier_ops vma_userptr_notifier_ops = {
 	.invalidate_start = xe_vma_userptr_invalidate_start,
 	.invalidate_finish = xe_vma_userptr_invalidate_finish,
 };
+#else
+static const struct mmu_interval_notifier_ops vma_userptr_notifier_ops = {
+	.invalidate = vma_userptr_invalidate,
+};
+#endif
 
 #if IS_ENABLED(CONFIG_DRM_XE_USERPTR_INVAL_INJECT)
 /**
@@ -269,7 +356,9 @@ static const struct mmu_interval_notifier_ops vma_userptr_notifier_ops = {
  */
 void xe_vma_userptr_force_invalidate(struct xe_userptr_vma *uvma)
 {
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(7, 1, 0)
 	struct mmu_interval_notifier_finish *finish;
+#endif
 	struct xe_vm *vm = xe_vma_vm(&uvma->vma);
 
 	/* Protect against concurrent userptr pinning */
@@ -286,11 +375,15 @@ void xe_vma_userptr_force_invalidate(struct xe_userptr_vma *uvma)
 				     uvma->userptr.pages.notifier_seq))
 		uvma->userptr.pages.notifier_seq -= 2;
 
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(7, 1, 0)
 	finish = xe_vma_userptr_invalidate_pass1(vm, uvma);
 	if (finish)
 		finish = xe_vma_userptr_do_inval(vm, uvma, true);
 	if (finish)
 		xe_vma_userptr_complete_tlb_inval(vm, uvma);
+#else
+	__vma_userptr_invalidate(vm, uvma);
+#endif
 }
 #endif
 

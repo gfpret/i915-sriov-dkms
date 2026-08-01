@@ -140,8 +140,8 @@ static int xe_guid_decode(u32 guid, int *index, u32 *offset)
 	return 0;
 }
 
-#ifdef IDB_XE_PMT_TELEM_READ_USE_PCI_DEV
-int xe_pmt_telem_read(struct pci_dev *pdev, u32 guid, u64 *data, loff_t user_offset,
+#ifndef IDB_XE_PMT_TELEM_READ_USE_PCI_DEV
+int xe_pmt_telem_read(struct device *dev, u32 guid, u64 *data, loff_t user_offset,
 		      u32 count)
 {
 	struct xe_device *xe = kdev_to_xe_device(dev);
@@ -174,10 +174,10 @@ int xe_pmt_telem_read(struct pci_dev *pdev, u32 guid, u64 *data, loff_t user_off
 	return count;
 }
 #else
-int xe_pmt_telem_read(struct device *dev, u32 guid, u64 *data, loff_t user_offset,
+int xe_pmt_telem_read(struct pci_dev *pdev, u32 guid, u64 *data, loff_t user_offset,
 		      u32 count)
 {
-	struct xe_device *xe = kdev_to_xe_device(dev);
+	struct xe_device *xe = pdev_to_xe_device(pdev);
 	void __iomem *telem_addr = xe->mmio.regs + BMG_TELEMETRY_OFFSET;
 	u32 mem_region;
 	u32 offset;
@@ -258,10 +258,10 @@ void xe_vsec_init(struct xe_device *xe)
 	 * Register a VSEC. Cleanup is handled using device managed
 	 * resources.
 	 */
-#ifdef IDB_XE_PMT_TELEM_READ_USE_PCI_DEV
-	intel_vsec_register(pdev, info);
-#else
+#ifndef IDB_XE_PMT_TELEM_READ_USE_PCI_DEV
 	intel_vsec_register(dev, info);
+#else
+	intel_vsec_register(pdev, info);
 #endif
 }
 MODULE_IMPORT_NS("INTEL_VSEC");

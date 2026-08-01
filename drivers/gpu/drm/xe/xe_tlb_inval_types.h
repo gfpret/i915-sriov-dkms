@@ -134,6 +134,7 @@ struct xe_tlb_inval_fence {
 	ktime_t inval_time;
 };
 
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(7, 1, 0)
 /**
  * struct xe_tlb_inval_batch - Batch of TLB invalidation fences
  *
@@ -145,5 +146,6 @@ struct xe_tlb_inval_batch {
 	/** @num_fences: number of valid entries in @fence */
 	unsigned int num_fences;
 };
+#endif
 
 #endif

@@ -8,6 +8,7 @@
 
 #include <linux/list.h>
 #include <linux/types.h>
+#include <linux/gpu_buddy.h>
 
 #include <drm/ttm/ttm_resource.h>
 

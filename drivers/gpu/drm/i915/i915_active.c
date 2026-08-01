@@ -1045,10 +1045,18 @@ __i915_active_fence_set(struct i915_active_fence *active,
 	 * nesting rules for the fence->lock; the inner lock is always the
 	 * older lock.
 	 */
+#if LINUX_VERSION_CODE < KERNEL_VERSION(7, 1, 0)
+	spin_lock_irqsave(fence->lock, flags);
+#else
 	dma_fence_lock_irqsave(fence, flags);
+#endif
 	if (prev)
+#if LINUX_VERSION_CODE < KERNEL_VERSION(7, 1, 0)
+		spin_lock_nested(prev->lock, SINGLE_DEPTH_NESTING);
+#else
 		spin_lock_nested(dma_fence_spinlock(prev),
 				 SINGLE_DEPTH_NESTING);
+#endif
 
 	/*
 	 * A does the cmpxchg first, and so it sees C or NULL, as before, or
@@ -1062,18 +1070,34 @@ __i915_active_fence_set(struct i915_active_fence *active,
 	 */
 	while (cmpxchg(__active_fence_slot(active), prev, fence) != prev) {
 		if (prev) {
+#if LINUX_VERSION_CODE < KERNEL_VERSION(7, 1, 0)
+			spin_unlock(prev->lock);
+#else
 			spin_unlock(dma_fence_spinlock(prev));
+#endif
 			dma_fence_put(prev);
 		}
+#if LINUX_VERSION_CODE < KERNEL_VERSION(7, 1, 0)
+		spin_unlock_irqrestore(fence->lock, flags);
+#else
 		dma_fence_unlock_irqrestore(fence, flags);
+#endif
 
 		prev = i915_active_fence_get(active);
 		GEM_BUG_ON(prev == fence);
 
+#if LINUX_VERSION_CODE < KERNEL_VERSION(7, 1, 0)
+		spin_lock_irqsave(fence->lock, flags);
+#else
 		dma_fence_lock_irqsave(fence, flags);
+#endif
 		if (prev)
+#if LINUX_VERSION_CODE < KERNEL_VERSION(7, 1, 0)
+			spin_lock_nested(prev->lock, SINGLE_DEPTH_NESTING);
+#else
 			spin_lock_nested(dma_fence_spinlock(prev),
 					 SINGLE_DEPTH_NESTING);
+#endif
 	}
 
 	/*
@@ -1091,10 +1115,18 @@ __i915_active_fence_set(struct i915_active_fence *active,
 	if (prev) {
 		__list_del_entry(&active->cb.node);
 		/* serialise with prev->cb_list */
+#if LINUX_VERSION_CODE < KERNEL_VERSION(7, 1, 0)
+		spin_unlock(prev->lock);
+#else
 		spin_unlock(dma_fence_spinlock(prev));
+#endif
 	}
 	list_add_tail(&active->cb.node, &fence->cb_list);
+#if LINUX_VERSION_CODE < KERNEL_VERSION(7, 1, 0)
+	spin_unlock_irqrestore(fence->lock, flags);
+#else
 	dma_fence_unlock_irqrestore(fence, flags);
+#endif
 
 	return prev;
 }

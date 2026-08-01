@@ -13,9 +13,12 @@ intel_sriov_compat-y += v7.0/dmabuf_dma_fence.o \
 			v7.0/drm_dp_helper.o \
 			v7.0/drm_sched_main.o 
 
-intel_sriov_compat-y += drm_gpusvm.o \
-			drm_pagemap.o \
-			drm_pagemap_util.o
+intel_sriov_compat-y += v7.1/bitmap.o \
+			v7.1/drm_suballoc.o 
+
+intel_sriov_compat-y += drm_gpusvm/drm_gpusvm.o \
+			drm_gpusvm/drm_pagemap.o \
+			drm_gpusvm/drm_pagemap_util.o
 
 intel_sriov_compat-y += main.o
 
