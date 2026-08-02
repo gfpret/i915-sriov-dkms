@@ -140,7 +140,7 @@ static int xe_guid_decode(u32 guid, int *index, u32 *offset)
 	return 0;
 }
 
-#ifndef IDB_XE_PMT_TELEM_READ_USE_PCI_DEV
+#ifdef IDB_XE_PMT_TELEM_READ_USE_KERNEL_DEV
 int xe_pmt_telem_read(struct device *dev, u32 guid, u64 *data, loff_t user_offset,
 		      u32 count)
 {
@@ -233,7 +233,7 @@ void xe_vsec_init(struct xe_device *xe)
 {
 	struct intel_vsec_platform_info *info;
 	struct device *dev = xe->drm.dev;
-#ifdef IDB_XE_PMT_TELEM_READ_USE_PCI_DEV
+#ifndef IDB_XE_PMT_TELEM_READ_USE_KERNEL_DEV
 	struct pci_dev *pdev = to_pci_dev(dev);
 #endif
 	enum xe_vsec platform;
@@ -258,7 +258,7 @@ void xe_vsec_init(struct xe_device *xe)
 	 * Register a VSEC. Cleanup is handled using device managed
 	 * resources.
 	 */
-#ifndef IDB_XE_PMT_TELEM_READ_USE_PCI_DEV
+#ifdef IDB_XE_PMT_TELEM_READ_USE_KERNEL_DEV
 	intel_vsec_register(dev, info);
 #else
 	intel_vsec_register(pdev, info);

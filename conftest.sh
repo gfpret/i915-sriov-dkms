@@ -87,13 +87,13 @@ ct_pci_resize_resource_4args() {
 	compile_check "$CODE" "IDB_PCI_RESIZE_RESOURCE_4ARGS" 1
 }
 
-ct_xe_pmt_telem_read_pci_device() {
+ct_xe_pmt_telem_read_kernel_device() {
 	CODE="
 	#include <linux/pci.h>
 	#include <linux/intel_vsec.h>
-	static int xe_pmt_telem_read(struct pci_dev *pdev, u32 guid, u64 *data, loff_t user_offset, u32 count)
+	static int xe_pmt_telem_read(struct device *dev, u32 guid, u64 *data, loff_t user_offset, u32 count)
 	{
-		(void)pdev;
+		(void)dev;
 		(void)guid;
 		(void)data;
 		(void)user_offset;
@@ -106,7 +106,7 @@ ct_xe_pmt_telem_read_pci_device() {
 	};
 	"
 
-	compile_check "$CODE" "IDB_XE_PMT_TELEM_READ_USE_PCI_DEV" 1
+	compile_check "$CODE" "IDB_XE_PMT_TELEM_READ_USE_KERNEL_DEV" 1
 }
 
 case "${ACTION}" in
