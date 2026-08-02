@@ -375,6 +375,7 @@ void drm_pagemap_destroy(struct drm_pagemap *dpagemap, bool is_atomic_or_reclaim
 
 int drm_pagemap_reinit(struct drm_pagemap *dpagemap);
 
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 19, 0)
 /**
  * drm_pagemap_page_zone_device_data() - Page to zone_device_data
  * @page: Pointer to the page
@@ -387,6 +388,12 @@ static inline struct drm_pagemap_zdd *drm_pagemap_page_zone_device_data(struct p
 
 	return folio_zone_device_data(folio);
 }
+#else
+static inline struct drm_pagemap_zdd *drm_pagemap_page_zone_device_data(struct page *page)
+{
+	return NULL;
+}
+#endif
 
 #else
 
