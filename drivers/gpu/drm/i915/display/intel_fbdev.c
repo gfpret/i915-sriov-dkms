@@ -267,10 +267,10 @@ int intel_fbdev_driver_fbdev_probe(struct drm_fb_helper *helper,
 	struct intel_display *display = to_intel_display(helper->dev);
 	struct intel_fbdev *ifbdev = to_intel_fbdev(helper);
 	struct intel_framebuffer *fb = ifbdev->fb;
-#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 19, 0)
-	struct fb_info *info;
-#else
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 19, 0)
 	struct fb_info *info = helper->info;
+#else
+	struct fb_info *info;
 #endif
 	struct ref_tracker *wakeref;
 	struct i915_vma *vma;

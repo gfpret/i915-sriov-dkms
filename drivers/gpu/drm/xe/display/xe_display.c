@@ -346,10 +346,10 @@ void xe_display_pm_suspend(struct xe_device *xe)
 	 */
 	intel_power_domains_disable(display);
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 19, 0)
-	drm_client_dev_suspend(&xe->drm, false);
-#else
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 19, 0)
 	drm_client_dev_suspend(&xe->drm);
+#else
+	drm_client_dev_suspend(&xe->drm, false);
 #endif
 
 
@@ -384,10 +384,10 @@ void xe_display_pm_shutdown(struct xe_device *xe)
 
 	intel_power_domains_disable(display);
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 19, 0)
-	drm_client_dev_suspend(&xe->drm, false);
-#else 
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 19, 0)
 	drm_client_dev_suspend(&xe->drm);
+#else 
+	drm_client_dev_suspend(&xe->drm, false);
 #endif
 
 	if (intel_display_device_present(display)) {
@@ -513,10 +513,10 @@ void xe_display_pm_resume(struct xe_device *xe)
 
 	intel_opregion_resume(display);
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 19, 0)
-	drm_client_dev_resume(&xe->drm, false);
-#else
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 19, 0)
 	drm_client_dev_resume(&xe->drm);
+#else
+	drm_client_dev_resume(&xe->drm, false);
 #endif
 
 	intel_power_domains_enable(display);

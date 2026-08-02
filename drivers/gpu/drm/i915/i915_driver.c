@@ -1083,10 +1083,10 @@ void i915_driver_shutdown(struct drm_i915_private *i915)
 	intel_runtime_pm_disable(&i915->runtime_pm);
 	intel_power_domains_disable(display);
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 19, 0)
-	drm_client_dev_suspend(&i915->drm, false);
-#else
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 19, 0)
 	drm_client_dev_suspend(&i915->drm);
+#else
+	drm_client_dev_suspend(&i915->drm, false);
 #endif
 
 	if (intel_display_device_present(display)) {
@@ -1173,10 +1173,10 @@ static int i915_drm_suspend(struct drm_device *dev)
 	 * properly. */
 	intel_power_domains_disable(display);
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 19, 0)
-	drm_client_dev_suspend(dev, false);
-#else
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 19, 0)
 	drm_client_dev_suspend(dev);
+#else
+	drm_client_dev_suspend(dev, false);
 #endif
 
 	if (intel_display_device_present(display)) {
@@ -1393,10 +1393,10 @@ static int i915_drm_resume(struct drm_device *dev)
 
 	intel_opregion_resume(display);
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 19, 0)
-	drm_client_dev_resume(dev, false);
-#else
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 19, 0)
 	drm_client_dev_resume(dev);
+#else
+	drm_client_dev_resume(dev, false);
 #endif
 
 	intel_power_domains_enable(display);

@@ -200,11 +200,11 @@ static int i915_ttm_tt_shmem_populate(struct ttm_device *bdev,
 		struct address_space *mapping;
 		gfp_t mask;
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(7, 0, 0)
-		filp = shmem_file_setup("i915-shmem-tt", size, VM_NORESERVE);
-#else
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(7, 0, 0)
 		filp = shmem_file_setup("i915-shmem-tt", size,
 					mk_vma_flags(VMA_NORESERVE_BIT));
+#else
+		filp = shmem_file_setup("i915-shmem-tt", size, VM_NORESERVE);
 #endif
 		if (IS_ERR(filp))
 			return PTR_ERR(filp);
@@ -1040,10 +1040,10 @@ static void i915_ttm_delayed_free(struct drm_i915_gem_object *obj)
 {
 	GEM_BUG_ON(!obj->ttm.created);
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 19, 0)
-	ttm_bo_put(i915_gem_to_ttm(obj));
-#else
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 19, 0)
 	ttm_bo_fini(i915_gem_to_ttm(obj));
+#else
+	ttm_bo_put(i915_gem_to_ttm(obj));
 #endif
 }
 

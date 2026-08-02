@@ -201,10 +201,10 @@ static void drm_pagemap_get_devmem_page(struct page *page,
 					struct drm_pagemap_zdd *zdd)
 {
 	page->zone_device_data = drm_pagemap_zdd_get(zdd);
-#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 19, 0)
-	zone_device_page_init(page);
-#else
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 19, 0)
 	zone_device_page_init(page, page_pgmap(page), 0);
+#else
+	zone_device_page_init(page);
 #endif
 }
 
@@ -1143,15 +1143,15 @@ err_out:
  * This function is a callback used to put the GPU SVM zone device data
  * associated with a page when it is being released.
  */
-#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 19, 0)
-static void drm_pagemap_page_free(struct page *page)
-{
-	drm_pagemap_zdd_put(page->zone_device_data);
-}
-#else
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 19, 0)
 static void drm_pagemap_folio_free(struct folio *folio)
 {
 	drm_pagemap_zdd_put(folio->page.zone_device_data);
+}
+#else
+static void drm_pagemap_page_free(struct page *page)
+{
+	drm_pagemap_zdd_put(page->zone_device_data);
 }
 #endif
 
@@ -1179,10 +1179,10 @@ static vm_fault_t drm_pagemap_migrate_to_ram(struct vm_fault *vmf)
 }
 
 static const struct dev_pagemap_ops drm_pagemap_pagemap_ops = {
-#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 19, 0)
-	.page_free = drm_pagemap_page_free,
-#else
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 19, 0)
 	.folio_free = drm_pagemap_folio_free,
+#else
+	.page_free = drm_pagemap_page_free,
 #endif
 	.migrate_to_ram = drm_pagemap_migrate_to_ram,
 };

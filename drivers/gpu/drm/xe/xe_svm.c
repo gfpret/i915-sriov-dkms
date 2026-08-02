@@ -283,14 +283,14 @@ static void xe_svm_invalidate(struct drm_gpusvm *gpusvm,
 
 	xe_device_wmb(xe);
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(7, 1, 0)
-	err = xe_vm_range_tilemask_tlb_inval(vm, adj_start, adj_end, tile_mask);
-	WARN_ON_ONCE(err);
-#else
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(7, 1, 0)
 	err = xe_tlb_inval_range_tilemask_submit(xe, vm->usm.asid, adj_start, adj_end,
 						 tile_mask, &batch);
 	if (!WARN_ON_ONCE(err))
 		xe_tlb_inval_batch_wait(&batch);
+#else
+	err = xe_vm_range_tilemask_tlb_inval(vm, adj_start, adj_end, tile_mask);
+	WARN_ON_ONCE(err);
 #endif
 
 range_notifier_event_end:

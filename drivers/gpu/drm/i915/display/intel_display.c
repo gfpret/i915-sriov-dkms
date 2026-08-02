@@ -4319,17 +4319,17 @@ static int intel_crtc_atomic_check(struct intel_atomic_state *state,
 #endif
 
 	if (DISPLAY_VER(display) >= 9) {
-#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 19, 0)
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 19, 0)
 		if (intel_crtc_needs_modeset(crtc_state) ||
-		    intel_crtc_needs_fastset(crtc_state)) {
+		    intel_crtc_needs_fastset(crtc_state) ||
+		    intel_casf_needs_scaler(crtc_state)) {
 			ret = skl_update_scaler_crtc(crtc_state);
 			if (ret)
 				return ret;
 		}
 #else
 		if (intel_crtc_needs_modeset(crtc_state) ||
-		    intel_crtc_needs_fastset(crtc_state) ||
-		    intel_casf_needs_scaler(crtc_state)) {
+		    intel_crtc_needs_fastset(crtc_state)) {
 			ret = skl_update_scaler_crtc(crtc_state);
 			if (ret)
 				return ret;

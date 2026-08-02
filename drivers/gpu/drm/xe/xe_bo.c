@@ -1881,10 +1881,10 @@ static void xe_gem_object_free(struct drm_gem_object *obj)
 	 * refcount directly if needed.
 	 */
 	__xe_bo_vunmap(gem_to_xe_bo(obj));
-#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 19, 0)
-	ttm_bo_put(container_of(obj, struct ttm_buffer_object, base));
-#else
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 19, 0)
 	ttm_bo_fini(container_of(obj, struct ttm_buffer_object, base));
+#else
+	ttm_bo_put(container_of(obj, struct ttm_buffer_object, base));
 #endif
 }
 
@@ -3880,14 +3880,14 @@ int xe_bo_dumb_create(struct drm_file *file_priv,
 	u32 page_size = max_t(u32, PAGE_SIZE,
 		xe->info.vram_flags & XE_VRAM_FLAGS_NEED64K ? SZ_64K : SZ_4K);
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 19, 0)
-	args->pitch = ALIGN(args->width * cpp, 64);
-	args->size = ALIGN(mul_u32_u32(args->pitch, args->height),
-			   page_size);
-#else
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 19, 0)
 	err = drm_mode_size_dumb(dev, args, SZ_64, page_size);
 	if (err)
 		return err;
+#else
+	args->pitch = ALIGN(args->width * cpp, 64);
+	args->size = ALIGN(mul_u32_u32(args->pitch, args->height),
+			   page_size);
 #endif
 
 	bo = xe_bo_create_user(xe, NULL, args->size,
