@@ -17,6 +17,10 @@
 
 6. Reboot.
 
+**Note:** You can passthrough any **VF (00:02.1–00:02.7)** to your **VMs**, never pass the **PF (02:00.0)** to **VM** which would crash all other VFs.
+
+For containers/LXCs, you can directly passthrough the render node of the PF.
+
 ## Optional Configurations
 
 ### Block VFs on the Host
@@ -29,4 +33,4 @@ To apply this configuration, follow the **[Block VFs Setup Guide](block-vfs.md)*
 Remove the package with `pacman -R i915-sriov-dkms`.
 
 If you installed the module manually, or if the package manager fails to remove it from the kernel tree, you can remove it forcibly with:
-`dkms remove i915-sriov-dkms/2026.08.02`
+`dkms remove i915-sriov-dkms/2026.08.08`

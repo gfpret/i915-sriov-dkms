@@ -15,9 +15,9 @@ You need to install this dkms module in **both host and guest!**
 
 **Required kernel**: 6.17.x ~ 7.0.x
 
-**Latest release**: [2026.08.02](https://github.com/strongtz/i915-sriov-dkms/releases/tag/2026.08.02)
+**Latest release**: [2026.08.08](https://github.com/strongtz/i915-sriov-dkms/releases/tag/2026.08.08)
 
-For older kernel (v6.12 ~ v6.19), please use the [2026.03.05.1](https://github.com/strongtz/i915-sriov-dkms/releases/tag/2026.03.05.1) release.
+For older kernel (v6.12 ~ v6.19), please use the [2026.03.05.4](https://github.com/strongtz/i915-sriov-dkms/releases/tag/2026.03.05.4) release.
 
 For v6.8 ~ v6.12, please use the [2025.07.22](https://github.com/strongtz/i915-sriov-dkms/releases/tag/2025.07.22) release.
 
@@ -58,6 +58,10 @@ echo 7 > /sys/devices/pci0000:00/0000:00:02.0/sriov_numvfs
 
 You can create up to 7 VFs on Intel UHD Graphics
 
+**Note:** You can passthrough any **VF (00:02.1–00:02.7)** to your **VMs**, never pass the **PF (02:00.0)** to **VM** which would crash all other VFs.
+
+For containers/LXCs, you can directly passthrough the render node of the PF.
+
 ## Generic Troubleshooting
 If you encounter any issues that prevent the system from booting properly (e.g., a hang or black screen), you can temporarily disable the module by modifying the kernel command line at boot.
 
@@ -86,7 +90,7 @@ For detailed installation instructions, please refer to the specific guide for y
 
 ### Host Installation
 - [Arch Linux Host](docs/install-arch-host.md)
-- [NixOS Linux Host (Tested Kernel 6.17)](docs/install-nixos-host.md)
+- [NixOS Linux Host](docs/install-nixos-host.md)
 - [Proxmox PVE Host](docs/install-pve-host.md)
 - [Manual Host Installation Steps](docs/install-manual.md) - Applicable to Debian, Ubuntu, and Arch Linux hosts.
 

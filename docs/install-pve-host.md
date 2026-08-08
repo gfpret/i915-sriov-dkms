@@ -1,20 +1,24 @@
 # PVE Host Installation Steps
 
 1. Install build tools: `apt install build-essential dkms`
-2. Install the kernel and headers for desired version: `apt install proxmox-default-kernel proxmox-default-headers` (for unsigned kernel).
-3. Download deb package from the [releases page](https://github.com/strongtz/i915-sriov-dkms/releases)
+1. Install the kernel and headers for desired version: `apt install proxmox-default-kernel proxmox-default-headers` (for unsigned kernel).
+1. Download deb package from the [releases page](https://github.com/strongtz/i915-sriov-dkms/releases)
    ```sh
-   wget -O /tmp/i915-sriov-dkms_2026.08.02_amd64.deb "https://github.com/strongtz/i915-sriov-dkms/releases/download/2026.08.02/i915-sriov-dkms_2026.08.02_amd64.deb"
+   wget -O /tmp/i915-sriov-dkms_2026.08.08_amd64.deb "https://github.com/strongtz/i915-sriov-dkms/releases/download/2026.08.08/i915-sriov-dkms_2026.08.08_amd64.deb"
    ```
-4. Install the deb package with dpkg: `dpkg -i /tmp/i915-sriov-dkms_2026.08.02_amd64.deb`
-5. Once finished, the kernel commandline needs to be adjusted: `nano /etc/default/grub` and change `GRUB_CMDLINE_LINUX_DEFAULT` to `intel_iommu=on i915.enable_guc=3 i915.max_vfs=7 module_blacklist=xe`, or add to it if you have other arguments there already.
-6. You can also use `xe` driver instead of `i915` as described in the [Required Kernel Parameters](https://github.com/strongtz/i915-sriov-dkms?tab=readme-ov-file#required-kernel-parameters) section.
-7. Update `grub` and `initramfs` by executing `update-grub` and `update-initramfs -u`
-8. Optionally pin the kernel version and update the boot config via `proxmox-boot-tool`.
-9. In order to enable the VFs, a `sysfs` attribute must be set. Install `sysfsutils`, then do `echo "devices/pci0000:00/0000:00:02.0/sriov_numvfs = 7" > /etc/sysfs.conf`.
-10. Reboot the system.
-11. When the system is back up again, you should see the number of VFs under 02:00.1 - 02:00.7.
-12. You can passthrough the VFs to LXCs or VMs. However, never pass the **PF (02:00.0)** to **VM** which would crash all other VFs.
+1. Install the deb package with dpkg: `dpkg -i /tmp/i915-sriov-dkms_2026.08.08_amd64.deb`
+1. Once finished, the kernel commandline needs to be adjusted: `nano /etc/default/grub` and change `GRUB_CMDLINE_LINUX_DEFAULT` to `intel_iommu=on i915.enable_guc=3 i915.max_vfs=7 module_blacklist=xe`, or add to it if you have other arguments there already.
+1. You can also use `xe` driver instead of `i915` as described in the [Required Kernel Parameters](https://github.com/strongtz/i915-sriov-dkms?tab=readme-ov-file#required-kernel-parameters) section.
+1. Update `grub` and `initramfs` by executing `update-grub` and `update-initramfs -u`
+1. Optionally pin the kernel version and update the boot config via `proxmox-boot-tool`.
+1. In order to enable the VFs, a `sysfs` attribute must be set. Install `sysfsutils`, then do `echo "devices/pci0000:00/0000:00:02.0/sriov_numvfs = 7" > /etc/sysfs.conf`.
+1. Reboot the system.
+1. When the system is back up again, you should see the number of VFs under 02:00.1 - 02:00.7.
+
+**Note:** You can passthrough any **VF (00:02.1–00:02.7)** to your **VMs**, never pass the **PF (02:00.0)** to **VM** which would crash all other VFs.
+
+For containers/LXCs, you can directly passthrough the render node of the PF.
+
 
 ## Optional Configurations
 
@@ -33,4 +37,4 @@ To apply this configuration, follow the **[UEFI Secure Boot Setup Guide](secure-
 Remove the package with `dpkg -P i915-sriov-dkms`.
 
 If you installed the module manually, or if the package manager fails to remove it from the kernel tree, you can remove it forcibly with:
-`dkms remove i915-sriov-dkms/2026.08.02`
+`dkms remove i915-sriov-dkms/2026.08.08`

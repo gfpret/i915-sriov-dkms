@@ -2,6 +2,10 @@
 
 For NixOS users, the i915-sriov kernel module can be directly included in your NixOS configuration without the use of DKMS. In particular, the kernel module is provided as a NixOS module that must be included in your NixOS configuration. This NixOS module places the i915-sriov kernel module via an overlay in your `pkgs` attribute set with the attribute name `i915-sriov`. This kernel module can then be included in your configuration by declaring `boot.extraModulePackages = [ pkgs.i915-sriov ];` The same applies also to `xe-sriov`. It is recommended to set `inputs.nixpkgs.follows = "nixpkgs"` to avoid version mismatch.
 
+**Note:** You can passthrough any **VF (00:02.1–00:02.7)** to your **VMs**, never pass the **PF (02:00.0)** to **VM** which would crash all other VFs.
+
+For containers/LXCs, you can directly passthrough the render node of the PF.
+
 ## Optional Configurations
 
 ### Block VFs on the Host
