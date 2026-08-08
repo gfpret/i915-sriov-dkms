@@ -6,6 +6,7 @@
 
 #include <linux/gpu_buddy.h>
 
+#include <drm/drm_buddy.h>
 #include <drm/drm_managed.h>
 #include <drm/drm_drv.h>
 

@@ -10,7 +10,7 @@ on:
 
 jobs:
   test-proxmox-trixie:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     container:
       image: debian:trixie
     steps:
@@ -24,9 +24,9 @@ jobs:
           apt-get update
           apt-get install -y proxmox-archive-keyring
           apt-get upgrade -y
-          apt-get install -y build-essential elfutils libelf-dev proxmox-default-kernel proxmox-default-headers
+          apt-get install -y build-essential elfutils libelf-dev proxmox-default-headers
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           path: i915-sriov-dkms
       - name: Check Kernel Compatibility
@@ -57,14 +57,14 @@ jobs:
           make -j$(nproc) KERNELRELEASE=$KERNELRELEASE -C $KERNEL_SOURCE_DIR M=$(pwd)
 
   test-ubuntu-noble:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     steps:
       - name: Install Dependencies
         run: |
           sudo apt-get update
-          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y git build-essential linux-image-generic-6.17 linux-headers-generic-6.17
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y git build-essential linux-headers-generic-6.17
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           path: i915-sriov-dkms
       - name: Check Kernel Compatibility
@@ -95,16 +95,16 @@ jobs:
           sudo make -j$(nproc) KERNELRELEASE=$KERNELRELEASE -C $KERNEL_SOURCE_DIR M=$(pwd)
 
   test-archlinux:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     container:
       image: archlinux:base-devel
     steps:
       - name: Install Dependencies
         run: |
           pacman-key --init
-          pacman -Syu --noconfirm git linux linux-headers
+          pacman -Syu --noconfirm git linux-headers
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           path: i915-sriov-dkms
       - name: Check Kernel Compatibility
@@ -134,16 +134,16 @@ jobs:
           sudo make -j$(nproc) KERNELRELEASE=$KERNELRELEASE -C $KERNEL_SOURCE_DIR M=$(pwd)
 
   test-archlinux-lts:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     container:
       image: archlinux:base-devel
     steps:
       - name: Install Dependencies
         run: |
           pacman-key --init
-          pacman -Syu --noconfirm git linux-lts linux-lts-headers
+          pacman -Syu --noconfirm git linux-lts-headers
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           path: i915-sriov-dkms
       - name: Check Kernel Compatibility
@@ -173,7 +173,7 @@ jobs:
           sudo make -j$(nproc) KERNELRELEASE=$KERNELRELEASE -C $KERNEL_SOURCE_DIR M=$(pwd)
 
   test-archlinux-mainline:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     container:
       image: archlinux:base-devel
     steps:
@@ -185,9 +185,9 @@ jobs:
           Server = https://repo.archlinuxcn.org/\$arch
           SigLevel = Never
           EOF
-          pacman -Syu --noconfirm git linux-mainline linux-mainline-headers
+          pacman -Syu --noconfirm git linux-mainline-headers
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           path: i915-sriov-dkms
       - name: Check Kernel Compatibility

@@ -1,8 +1,7 @@
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(7, 1, 0)
 #include_next <linux/gpu_buddy.h>
-#include <drm/drm_buddy.h>
 #else
-#include_next <drm/drm_buddy.h>
+#include <drm/drm_buddy.h>
 #define gpu_buddy drm_buddy
 #define gpu_buddy_block drm_buddy_block
 #define gpu_buddy_alloc_blocks drm_buddy_alloc_blocks
