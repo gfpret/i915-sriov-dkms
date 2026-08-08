@@ -1,9 +1,10 @@
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(7, 1, 0)
+#if __has_include_next(<linux/gpu_buddy.h>)
 #include_next <linux/gpu_buddy.h>
 #else
 #include <drm/drm_buddy.h>
 #define gpu_buddy drm_buddy
 #define gpu_buddy_block drm_buddy_block
+#define gpu_buddy_block_trim drm_buddy_block_trim
 #define gpu_buddy_alloc_blocks drm_buddy_alloc_blocks
 #define gpu_buddy_block_offset drm_buddy_block_offset
 #define gpu_buddy_block_size drm_buddy_block_size

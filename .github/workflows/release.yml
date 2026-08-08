@@ -71,3 +71,4 @@ jobs:
           files: |
             *.pkg*
             *.deb
+          generate_release_notes: true
