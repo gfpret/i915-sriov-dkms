@@ -87,6 +87,18 @@ ct_pci_resize_resource_4args() {
 	compile_check "$CODE" "IDB_PCI_RESIZE_RESOURCE_4ARGS" 1
 }
 
+ct_drm_fb_helper_alloc_info() {
+	CODE="
+	#include <drm/drm_fb_helper.h>
+	static void conftest_drm_fb_helper_alloc_info(void)
+	{
+		drm_fb_helper_alloc_info((struct drm_fb_helper *)NULL);
+	}
+	"
+
+	compile_check "$CODE" "IDB_HAVE_DRM_FB_HELPER_ALLOC_INFO" 1
+}
+
 ct_drm_exec_for_each_locked_object_no_index() {
 	CODE="
 	#include <drm/drm_exec.h>

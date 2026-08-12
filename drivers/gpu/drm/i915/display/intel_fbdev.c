@@ -267,7 +267,7 @@ int intel_fbdev_driver_fbdev_probe(struct drm_fb_helper *helper,
 	struct intel_display *display = to_intel_display(helper->dev);
 	struct intel_fbdev *ifbdev = to_intel_fbdev(helper);
 	struct intel_framebuffer *fb = ifbdev->fb;
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 19, 0)
+#ifndef IDB_HAVE_DRM_FB_HELPER_ALLOC_INFO
 	struct fb_info *info = helper->info;
 #else
 	struct fb_info *info;
@@ -326,7 +326,7 @@ int intel_fbdev_driver_fbdev_probe(struct drm_fb_helper *helper,
 		goto out_unlock;
 	}
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 18, 44)
+#ifdef IDB_HAVE_DRM_FB_HELPER_ALLOC_INFO
 	info = drm_fb_helper_alloc_info(helper);
 	if (IS_ERR(info)) {
 		drm_err(display->drm, "Failed to allocate fb_info (%pe)\n", info);
