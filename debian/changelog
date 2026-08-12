@@ -1,4 +1,11 @@
-i915-sriov-dkms (###LATEST_VERSION###) UNRELEASED; urgency=medium
+i915-sriov-dkms (2026.08.12) UNRELEASED; urgency=medium
+
+  * Sync v7.1.8 
+  * Fix build on v6.18.44/v7.1.8
+
+ -- bbaa <bbaa@bbaa.me>  Wed, 12 Aug 2026 12:42:33 +0800
+
+i915-sriov-dkms (2026.08.12) UNRELEASED; urgency=medium
 
   * Fix build on v6.18.42
 
