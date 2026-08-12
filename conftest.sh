@@ -87,6 +87,23 @@ ct_pci_resize_resource_4args() {
 	compile_check "$CODE" "IDB_PCI_RESIZE_RESOURCE_4ARGS" 1
 }
 
+ct_drm_exec_for_each_locked_object_no_index() {
+	CODE="
+	#include <drm/drm_exec.h>
+	static void conftest_drm_exec_for_each_locked_object_no_index(void)
+	{
+		struct drm_exec exec;
+		struct drm_gem_object *obj;
+
+		drm_exec_for_each_locked_object(&exec, obj) {
+			(void)obj;
+		}
+	}
+	"
+
+	compile_check "$CODE" "IDB_DRM_EXEC_FOR_EACH_LOCKED_OBJECT_NO_INDEX" 1
+}
+
 ct_xe_pmt_telem_read_kernel_device() {
 	CODE="
 	#include <linux/pci.h>
